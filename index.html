@@ -309,6 +309,65 @@ button {
   padding: 4px 8px;
 }
 
+/* Rejection / No state */
+#rejectOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+  animation: fadeScale 0.4s ease-out;
+}
+#rejectOverlay.show { display: flex; }
+#rejectEmoji {
+  font-size: 64px;
+  margin-bottom: 12px;
+  animation: heartBreak 0.6s ease-out;
+}
+@keyframes heartBreak {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes heartBreak {
+    0%, 100% { transform: scale(1); }
+  }
+}
+#rejectTitle {
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+#rejectBody {
+  font-size: clamp(14px, 3.5vw, 17px);
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+#repairBtn {
+  background: var(--yes-bg);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  min-height: 46px;
+  font-family: inherit;
+  transition: background 0.2s, transform 0.1s;
+}
+#repairBtn:hover { background: var(--yes-hover); transform: scale(1.04); }
+#repairBtn:active { transform: scale(0.97); }
+
 /* Confetti canvas */
 #confettiCanvas {
   position: fixed;
@@ -351,6 +410,13 @@ button {
     <button id="startOver">Start over</button>
   </div>
 
+  <div id="rejectOverlay">
+    <div id="rejectEmoji">💔😭</div>
+    <div id="rejectTitle">You broke my heart...</div>
+    <p id="rejectBody">This wasn't supposed to happen. There's still time to fix this.</p>
+    <button id="repairBtn">Repair broken heart 🩹💗</button>
+  </div>
+
   <div id="statusText" aria-live="polite" role="status"></div>
 </main>
 
@@ -369,7 +435,7 @@ button {
     </div>
   </div>
   <div class="error-actions">
-    <button id="fakeErrorOk">OK</button>
+    <button id="fakeErrorOk">I love you too 💕</button>
   </div>
 </div>
 
@@ -422,6 +488,8 @@ button {
   var startOverBtn = document.getElementById('startOver');
   var fakeError = document.getElementById('fakeError');
   var fakeErrorOk = document.getElementById('fakeErrorOk');
+  var rejectOverlay = document.getElementById('rejectOverlay');
+  var repairBtn = document.getElementById('repairBtn');
 
   // --- State ---
   var noDodgeCount = 0;
@@ -588,12 +656,31 @@ button {
     }
   });
 
-  // --- Keyboard: playful message ---
+  // --- Keyboard: show rejection state ---
   noBtn.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      tauntText.textContent = "You're stuck with me 😌";
+      showReject();
     }
+  });
+
+  // --- Fallback: if No somehow gets clicked ---
+  noBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showReject();
+  });
+
+  function showReject() {
+    rejectOverlay.classList.add('show');
+    statusText.textContent = 'You broke my heart...';
+  }
+
+  repairBtn.addEventListener('click', function() {
+    rejectOverlay.classList.remove('show');
+    noDodgeCount = 0;
+    tauntText.textContent = '';
+    statusText.textContent = '';
+    placeNoInitial();
   });
 
   // --- Yes button ---
@@ -621,6 +708,7 @@ button {
   startOverBtn.addEventListener('click', function() {
     successOverlay.classList.remove('show');
     fakeError.classList.remove('show');
+    rejectOverlay.classList.remove('show');
     if (errorTimer) clearTimeout(errorTimer);
     noDodgeCount = 0;
     tauntText.textContent = '';

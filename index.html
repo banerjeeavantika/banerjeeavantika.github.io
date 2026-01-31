@@ -446,7 +446,7 @@ button {
 
   <div id="arena">
     <button id="yesBtn" class="glass-btn">Yes 💘</button>
-    <button id="noBtn" class="glass-btn">No 🙃</button>
+    <button id="noBtn" class="glass-btn" tabindex="-1">No 🙃</button>
   </div>
 
   <p id="tauntText" aria-live="polite"></p>
@@ -705,13 +705,6 @@ button {
     }
   });
 
-  // --- Keyboard: show rejection state ---
-  noBtn.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      showReject();
-    }
-  });
 
   // --- Fallback: if No somehow gets clicked ---
   noBtn.addEventListener('click', function(e) {

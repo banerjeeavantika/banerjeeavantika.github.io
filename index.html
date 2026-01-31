@@ -128,13 +128,14 @@ button {
   min-width: 180px;
   width: 60%;
   max-width: 240px;
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
   z-index: 2;
-  margin: 0 auto;
-  display: block;
 }
-#yesBtn:hover { background: var(--yes-hover); transform: scale(1.04); }
-#yesBtn:active { transform: scale(0.97); }
+#yesBtn:hover { background: var(--yes-hover); transform: translateX(-50%) scale(1.04); }
+#yesBtn:active { transform: translateX(-50%) scale(0.97); }
 
 #noBtn {
   background: var(--no-bg);
@@ -143,6 +144,8 @@ button {
   min-width: 120px;
   padding: 10px 20px;
   position: absolute;
+  left: 0;
+  top: 0;
   z-index: 3;
   transition: transform 0.18s ease-out;
   user-select: none;

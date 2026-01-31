@@ -104,24 +104,56 @@ html, body {
   #arena { height: 160px; }
 }
 
-/* Buttons */
+/* Buttons — liquid glass style */
 button {
   font-family: inherit;
   font-size: 17px;
   font-weight: 600;
   border: none;
-  border-radius: 14px;
+  border-radius: 18px;
   cursor: pointer;
   min-height: 48px;
   padding: 12px 24px;
-  transition: background 0.2s, transform 0.1s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shared glass effect base */
+.glass-btn {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255,255,255,0.45);
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.08),
+    0 1px 3px rgba(0,0,0,0.06),
+    inset 0 1px 1px rgba(255,255,255,0.6),
+    inset 0 -1px 2px rgba(0,0,0,0.04);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+/* Glass shine highlight */
+.glass-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.5) 0%,
+    rgba(255,255,255,0.15) 60%,
+    transparent 100%
+  );
+  border-radius: 18px 18px 50% 50%;
+  pointer-events: none;
 }
 
 #yesBtn {
-  background: var(--yes-bg);
+  background: linear-gradient(135deg, rgba(233,30,99,0.75) 0%, rgba(194,24,91,0.8) 100%);
   color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
   min-width: 180px;
   width: 60%;
   max-width: 240px;
@@ -130,14 +162,23 @@ button {
   top: 12px;
   transform: translateX(-50%);
   z-index: 2;
+  font-size: 18px;
+  letter-spacing: 0.3px;
 }
-#yesBtn:hover { background: var(--yes-hover); transform: translateX(-50%) scale(1.04); }
+#yesBtn:hover {
+  background: linear-gradient(135deg, rgba(233,30,99,0.88) 0%, rgba(194,24,91,0.92) 100%);
+  transform: translateX(-50%) scale(1.05);
+  box-shadow:
+    0 6px 32px rgba(233,30,99,0.3),
+    0 2px 6px rgba(0,0,0,0.08),
+    inset 0 1px 1px rgba(255,255,255,0.6),
+    inset 0 -1px 2px rgba(0,0,0,0.04);
+}
 #yesBtn:active { transform: translateX(-50%) scale(0.97); }
 
 #noBtn {
-  background: var(--no-bg);
-  color: var(--no-text);
-  border: 2px solid var(--no-border);
+  background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(240,240,245,0.45) 100%);
+  color: #555;
   min-width: 120px;
   padding: 10px 20px;
   position: absolute;
@@ -147,8 +188,16 @@ button {
   transition: transform 0.06s ease-out;
   user-select: none;
   -webkit-user-select: none;
+  font-size: 16px;
 }
-#noBtn:hover { border-color: #aaa; }
+#noBtn:hover {
+  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,240,245,0.6) 100%);
+  box-shadow:
+    0 6px 28px rgba(0,0,0,0.1),
+    0 2px 6px rgba(0,0,0,0.06),
+    inset 0 1px 1px rgba(255,255,255,0.7),
+    inset 0 -1px 2px rgba(0,0,0,0.04);
+}
 
 #hintText {
   font-size: 13px;
@@ -396,8 +445,8 @@ button {
   <p id="messageBody">I promise snacks, cuddles, and good vibes.</p>
 
   <div id="arena">
-    <button id="yesBtn">Yes 💘</button>
-    <button id="noBtn">No 🙃</button>
+    <button id="yesBtn" class="glass-btn">Yes 💘</button>
+    <button id="noBtn" class="glass-btn">No 🙃</button>
   </div>
 
   <p id="tauntText" aria-live="polite"></p>
@@ -604,14 +653,14 @@ button {
     tauntText.textContent = CONFIG.noTaunts[ti] || '';
   }
 
-  // --- Initial placement ---
+  // --- Initial placement: centered below Yes ---
   function placeNoInitial() {
-    var pad = CONFIG.minPadding;
     var aW = arena.offsetWidth;
+    var aH = arena.offsetHeight;
     var noW = noBtn.offsetWidth;
     var noH = noBtn.offsetHeight;
-    var x = aW - noW - pad - 10;
-    var y = arena.offsetHeight - noH - pad;
+    var x = (aW - noW) / 2;
+    var y = aH - noH - CONFIG.minPadding;
     currentNoX = x;
     currentNoY = y;
     noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';

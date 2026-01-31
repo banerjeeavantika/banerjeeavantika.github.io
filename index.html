@@ -1,0 +1,572 @@
+---
+layout: null
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Will you be my Valentine?</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink: #e91e63;
+  --pink-light: #f8bbd0;
+  --pink-dark: #c2185b;
+  --red: #d32f2f;
+  --bg-start: #fce4ec;
+  --bg-end: #f8bbd0;
+  --card-bg: rgba(255,255,255,0.92);
+  --text: #4a1942;
+  --text-muted: #8e6585;
+  --yes-bg: #e91e63;
+  --yes-hover: #c2185b;
+  --no-bg: #f5f5f5;
+  --no-border: #ccc;
+  --no-text: #555;
+  --success-bg: rgba(255,255,255,0.96);
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 50%, #f48fb1 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--text);
+}
+
+/* Floating hearts background */
+.bg-hearts {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.bg-hearts .heart {
+  position: absolute;
+  font-size: 20px;
+  opacity: 0.15;
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0% { transform: translateY(110vh) rotate(0deg); opacity: 0.15; }
+  50% { opacity: 0.25; }
+  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bg-hearts .heart { animation: none !important; display: none; }
+  #noBtn { transition: none !important; }
+  .confetti-piece { animation: none !important; display: none; }
+}
+
+/* Card */
+#card {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  border-radius: 22px;
+  box-shadow: 0 8px 40px rgba(233,30,99,0.15), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 32px 28px 28px;
+  max-width: 560px;
+  width: 92vw;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+#messageTitle {
+  font-size: clamp(26px, 6vw, 40px);
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+#messageBody {
+  font-size: clamp(15px, 3.5vw, 18px);
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  line-height: 1.4;
+}
+
+/* Arena */
+#arena {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+@media (min-width: 520px) {
+  #arena { height: 140px; }
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  min-height: 48px;
+  padding: 12px 24px;
+  transition: background 0.2s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#yesBtn {
+  background: var(--yes-bg);
+  color: #fff;
+  min-width: 180px;
+  width: 60%;
+  max-width: 240px;
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+  display: block;
+}
+#yesBtn:hover { background: var(--yes-hover); transform: scale(1.04); }
+#yesBtn:active { transform: scale(0.97); }
+
+#noBtn {
+  background: var(--no-bg);
+  color: var(--no-text);
+  border: 2px solid var(--no-border);
+  min-width: 120px;
+  padding: 10px 20px;
+  position: absolute;
+  z-index: 3;
+  transition: transform 0.18s ease-out;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#noBtn:hover { border-color: #aaa; }
+
+#hintText {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  opacity: 0.7;
+}
+
+#tauntText {
+  font-size: 14px;
+  color: var(--pink);
+  margin-top: 6px;
+  min-height: 22px;
+  font-weight: 500;
+}
+
+/* Success state */
+#successOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--success-bg);
+  border-radius: 22px;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  animation: fadeScale 0.4s ease-out;
+}
+#successOverlay.show { display: flex; }
+
+@keyframes fadeScale {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fadeScale {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+}
+
+#successTitle {
+  font-size: clamp(24px, 5.5vw, 36px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+#successBody {
+  font-size: clamp(15px, 3.5vw, 18px);
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+#startOver {
+  background: none;
+  border: none;
+  color: var(--pink);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  min-height: auto;
+  padding: 4px 8px;
+}
+
+/* Confetti canvas */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Status for screen readers */
+#statusText {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-hearts" id="bgHearts"></div>
+
+<main id="card">
+  <h1 id="messageTitle">Will you be my Valentine? 💌</h1>
+  <p id="messageBody">I promise snacks, cuddles, and good vibes.</p>
+
+  <div id="arena">
+    <button id="yesBtn">Yes 💘</button>
+    <button id="noBtn">No 🙃</button>
+  </div>
+
+  <p id="tauntText" aria-live="polite"></p>
+  <p id="hintText">(Try clicking No… if you can 😌)</p>
+
+  <div id="successOverlay">
+    <div id="successTitle">YAY! It's a date 😌💞</div>
+    <p id="successBody">Text me what time works?</p>
+    <button id="startOver">Start over</button>
+  </div>
+
+  <div id="statusText" aria-live="polite" role="status"></div>
+</main>
+
+<canvas id="confettiCanvas"></canvas>
+
+<script>
+(function() {
+  'use strict';
+
+  // --- Config (editable) ---
+  var CONFIG = {
+    titleText: 'Will you be my Valentine? 💌',
+    subtitleText: 'I promise snacks, cuddles, and good vibes.',
+    successTitle: 'YAY! It\'s a date 😌💞',
+    successSubtitle: 'Text me what time works?',
+    noTaunts: [
+      '',
+      '',
+      'Are you sure? 🥺',
+      'Think again... 💭',
+      'Really?? 😢',
+      'Please?? 🥹',
+      'I\'ll be sad 😭',
+      'You\'re breaking my heart 💔',
+      'Be serious 😭',
+      'PLEASE 🙏',
+      'I won\'t give up 😤',
+      'Last chance... 👉👈',
+    ],
+    minPadding: 12,
+    maxRetries: 15,
+    dodgeTransitionMs: 180,
+  };
+
+  // --- URL param: ?to=Name ---
+  var params = new URLSearchParams(window.location.search);
+  var recipientName = params.get('to');
+  if (recipientName) {
+    var safe = recipientName.replace(/[<>"'&]/g, '');
+    CONFIG.titleText = safe + ', will you be my Valentine? 💌';
+    document.getElementById('messageTitle').textContent = CONFIG.titleText;
+  }
+
+  // --- DOM refs ---
+  var arena = document.getElementById('arena');
+  var yesBtn = document.getElementById('yesBtn');
+  var noBtn = document.getElementById('noBtn');
+  var tauntText = document.getElementById('tauntText');
+  var successOverlay = document.getElementById('successOverlay');
+  var statusText = document.getElementById('statusText');
+  var canvas = document.getElementById('confettiCanvas');
+  var startOverBtn = document.getElementById('startOver');
+
+  // --- State ---
+  var noDodgeCount = 0;
+  var arenaRect = arena.getBoundingClientRect();
+  var isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Background hearts ---
+  function createBgHearts() {
+    if (isReducedMotion) return;
+    var container = document.getElementById('bgHearts');
+    var hearts = ['💕', '💗', '💖', '❤️', '💘', '🩷', '♥'];
+    for (var i = 0; i < 15; i++) {
+      var span = document.createElement('span');
+      span.className = 'heart';
+      span.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      span.style.left = Math.random() * 100 + '%';
+      span.style.fontSize = (14 + Math.random() * 18) + 'px';
+      span.style.animationDuration = (6 + Math.random() * 8) + 's';
+      span.style.animationDelay = (Math.random() * 10) + 's';
+      container.appendChild(span);
+    }
+  }
+  createBgHearts();
+
+  // --- Safe positions (fallback) ---
+  function getSafePositions() {
+    arenaRect = arena.getBoundingClientRect();
+    var noW = noBtn.offsetWidth;
+    var noH = noBtn.offsetHeight;
+    var pad = CONFIG.minPadding;
+    var aW = arena.offsetWidth;
+    var aH = arena.offsetHeight;
+    var maxX = aW - noW - pad;
+    var maxY = aH - noH - pad;
+    return [
+      { x: pad, y: pad },
+      { x: maxX, y: pad },
+      { x: pad, y: maxY },
+      { x: maxX, y: maxY },
+      { x: aW / 2 - noW / 2, y: pad },
+      { x: aW / 2 - noW / 2, y: maxY },
+      { x: pad, y: aH / 2 - noH / 2 },
+      { x: maxX, y: aH / 2 - noH / 2 },
+    ];
+  }
+
+  // --- Overlap check ---
+  function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+    return !(ax + aw <= bx || bx + bw <= ax || ay + ah <= by || by + bh <= ay);
+  }
+
+  // --- Move No button ---
+  function moveNo() {
+    noDodgeCount++;
+    var pad = CONFIG.minPadding;
+    var aW = arena.offsetWidth;
+    var aH = arena.offsetHeight;
+    var noW = noBtn.offsetWidth;
+    var noH = noBtn.offsetHeight;
+
+    // Yes button rect relative to arena
+    var arenaR = arena.getBoundingClientRect();
+    var yesR = yesBtn.getBoundingClientRect();
+    var yesX = yesR.left - arenaR.left;
+    var yesY = yesR.top - arenaR.top;
+    var yesW = yesR.width;
+    var yesH = yesR.height;
+
+    var x, y, found = false;
+    for (var i = 0; i < CONFIG.maxRetries; i++) {
+      x = pad + Math.random() * (aW - noW - pad * 2);
+      y = pad + Math.random() * (aH - noH - pad * 2);
+      if (!rectsOverlap(x, y, noW, noH, yesX, yesY, yesW, yesH)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      var safe = getSafePositions();
+      for (var s = 0; s < safe.length; s++) {
+        if (!rectsOverlap(safe[s].x, safe[s].y, noW, noH, yesX, yesY, yesW, yesH)) {
+          x = safe[s].x;
+          y = safe[s].y;
+          found = true;
+          break;
+        }
+      }
+    }
+
+    if (!found) {
+      x = pad;
+      y = aH - noH - pad;
+    }
+
+    // Speed up dodge animation as count increases
+    var speed = Math.max(80, CONFIG.dodgeTransitionMs - noDodgeCount * 12);
+    if (!isReducedMotion) {
+      noBtn.style.transition = 'transform ' + speed + 'ms ease-out';
+    }
+
+    noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+    // Taunt text
+    var ti = Math.min(noDodgeCount, CONFIG.noTaunts.length - 1);
+    tauntText.textContent = CONFIG.noTaunts[ti] || '';
+  }
+
+  // --- Initial placement ---
+  function placeNoInitial() {
+    var pad = CONFIG.minPadding;
+    var aW = arena.offsetWidth;
+    var noW = noBtn.offsetWidth;
+    var noH = noBtn.offsetHeight;
+    var x = aW - noW - pad - 10;
+    var y = arena.offsetHeight - noH - pad;
+    noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  }
+
+  requestAnimationFrame(placeNoInitial);
+
+  // --- Desktop: mouseenter dodge ---
+  noBtn.addEventListener('mouseenter', function() {
+    moveNo();
+  });
+
+  // --- Mobile: touchstart / pointerdown dodge ---
+  noBtn.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    moveNo();
+  }, { passive: false });
+
+  noBtn.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+      e.preventDefault();
+      e.stopPropagation();
+      moveNo();
+    }
+  });
+
+  // --- Keyboard: allow but show playful message ---
+  noBtn.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      tauntText.textContent = "You're stuck with me 😌";
+    }
+  });
+
+  // --- Yes button ---
+  yesBtn.addEventListener('click', function() {
+    showSuccess();
+  });
+
+  function showSuccess() {
+    successOverlay.classList.add('show');
+    statusText.textContent = CONFIG.successTitle;
+    launchConfetti();
+  }
+
+  // --- Start over ---
+  startOverBtn.addEventListener('click', function() {
+    successOverlay.classList.remove('show');
+    noDodgeCount = 0;
+    tauntText.textContent = '';
+    statusText.textContent = '';
+    placeNoInitial();
+  });
+
+  // --- Resize handler ---
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      arenaRect = arena.getBoundingClientRect();
+      placeNoInitial();
+      noDodgeCount = 0;
+      tauntText.textContent = '';
+    }, 200);
+  });
+
+  // --- Confetti ---
+  function launchConfetti() {
+    if (isReducedMotion) return;
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    var pieces = [];
+    var colors = ['#e91e63', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#e040fb', '#ff4081', '#f8bbd0', '#d32f2f'];
+    var shapes = ['rect', 'heart'];
+
+    for (var i = 0; i < 120; i++) {
+      pieces.push({
+        x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+        y: canvas.height / 2 + (Math.random() - 0.5) * 100,
+        vx: (Math.random() - 0.5) * 16,
+        vy: -Math.random() * 14 - 4,
+        size: 6 + Math.random() * 8,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rotation: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 12,
+        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        gravity: 0.25 + Math.random() * 0.15,
+        opacity: 1,
+      });
+    }
+
+    var startTime = performance.now();
+    var duration = 2200;
+
+    function drawHeart(ctx, x, y, size) {
+      var s = size / 2;
+      ctx.beginPath();
+      ctx.moveTo(x, y + s * 0.4);
+      ctx.bezierCurveTo(x, y - s * 0.2, x - s, y - s * 0.6, x - s, y + s * 0.05);
+      ctx.bezierCurveTo(x - s, y + s * 0.6, x, y + s, x, y + s * 1.1);
+      ctx.bezierCurveTo(x, y + s, x + s, y + s * 0.6, x + s, y + s * 0.05);
+      ctx.bezierCurveTo(x + s, y - s * 0.6, x, y - s * 0.2, x, y + s * 0.4);
+      ctx.fill();
+    }
+
+    function frame(now) {
+      var elapsed = now - startTime;
+      if (elapsed > duration) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      var fadeStart = duration * 0.6;
+      for (var j = 0; j < pieces.length; j++) {
+        var p = pieces[j];
+        p.x += p.vx;
+        p.vy += p.gravity;
+        p.y += p.vy;
+        p.vx *= 0.985;
+        p.rotation += p.rotSpeed;
+
+        if (elapsed > fadeStart) {
+          p.opacity = Math.max(0, 1 - (elapsed - fadeStart) / (duration - fadeStart));
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.globalAlpha = p.opacity;
+        ctx.fillStyle = p.color;
+
+        if (p.shape === 'heart') {
+          drawHeart(ctx, 0, 0, p.size);
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        }
+        ctx.restore();
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>

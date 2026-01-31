@@ -1,0 +1,14 @@
+title: Valentine
+description: Will you be my Valentine?
+baseurl: ""
+url: "https://banerjeeavantika.github.io"
+
+# Build settings
+markdown: kramdown
+plugins: []
+
+# Exclude from build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

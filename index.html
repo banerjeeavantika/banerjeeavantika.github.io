@@ -14,9 +14,6 @@ layout: null
   --pink: #e91e63;
   --pink-light: #f8bbd0;
   --pink-dark: #c2185b;
-  --red: #d32f2f;
-  --bg-start: #fce4ec;
-  --bg-end: #f8bbd0;
   --card-bg: rgba(255,255,255,0.92);
   --text: #4a1942;
   --text-muted: #8e6585;
@@ -31,7 +28,8 @@ layout: null
 html, body {
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 50%, #f48fb1 100%);
+  background: linear-gradient(to bottom, #fff0f3 0%, #fce4ec 25%, #f8bbd0 55%, #f48fb1 80%, #ec407a 100%);
+  background-attachment: fixed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,31 +37,31 @@ html, body {
   color: var(--text);
 }
 
-/* Floating hearts background */
-.bg-hearts {
+/* Floating emoji background */
+.bg-floaters {
   position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
 }
-.bg-hearts .heart {
+.bg-floaters .floater {
   position: absolute;
-  font-size: 20px;
-  opacity: 0.15;
+  opacity: 0.18;
   animation: floatUp linear infinite;
 }
 @keyframes floatUp {
-  0% { transform: translateY(110vh) rotate(0deg); opacity: 0.15; }
-  50% { opacity: 0.25; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+  10% { opacity: 0.2; }
+  50% { opacity: 0.28; }
+  90% { opacity: 0.15; }
+  100% { transform: translateY(-10vh) rotate(360deg) scale(1.1); opacity: 0; }
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .bg-hearts .heart { animation: none !important; display: none; }
+  .bg-floaters .floater { animation: none !important; display: none; }
   #noBtn { transition: none !important; }
-  .confetti-piece { animation: none !important; display: none; }
 }
 
 /* Card */
@@ -98,13 +96,12 @@ html, body {
 #arena {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 200px;
   margin-bottom: 8px;
-  overflow: hidden;
 }
 
 @media (min-width: 520px) {
-  #arena { height: 140px; }
+  #arena { height: 160px; }
 }
 
 /* Buttons */
@@ -147,7 +144,7 @@ button {
   left: 0;
   top: 0;
   z-index: 3;
-  transition: transform 0.18s ease-out;
+  transition: transform 0.06s ease-out;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -166,6 +163,45 @@ button {
   margin-top: 6px;
   min-height: 22px;
   font-weight: 500;
+}
+
+/* No-click overlay (groundhog image) */
+#noOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.97);
+  border-radius: 22px;
+  z-index: 10;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeScale 0.35s ease-out;
+}
+#noOverlay.show { display: flex; }
+#noOverlay img {
+  max-width: 280px;
+  width: 80%;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+#noOverlay .no-msg {
+  font-size: clamp(18px, 4vw, 26px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+#noOverlayClose {
+  background: var(--yes-bg);
+  color: #fff;
+  font-size: 15px;
+  padding: 10px 28px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  min-height: 42px;
 }
 
 /* Success state */
@@ -237,7 +273,7 @@ button {
 </head>
 <body>
 
-<div class="bg-hearts" id="bgHearts"></div>
+<div class="bg-floaters" id="bgFloaters"></div>
 
 <main id="card">
   <h1 id="messageTitle">Will you be my Valentine? 💌</h1>
@@ -250,6 +286,12 @@ button {
 
   <p id="tauntText" aria-live="polite"></p>
   <p id="hintText">(Try clicking No… if you can 😌)</p>
+
+  <div id="noOverlay">
+    <img src="groundhog.png" alt="Screaming groundhog saying Ahhh!">
+    <div class="no-msg">Nice try! 😏</div>
+    <button id="noOverlayClose">Fine, I'll reconsider...</button>
+  </div>
 
   <div id="successOverlay">
     <div id="successTitle">YAY! It's a date 😌💞</div>
@@ -266,7 +308,7 @@ button {
 (function() {
   'use strict';
 
-  // --- Config (editable) ---
+  // --- Config ---
   var CONFIG = {
     titleText: 'Will you be my Valentine? 💌',
     subtitleText: 'I promise snacks, cuddles, and good vibes.',
@@ -287,8 +329,8 @@ button {
       'Last chance... 👉👈',
     ],
     minPadding: 12,
-    maxRetries: 15,
-    dodgeTransitionMs: 180,
+    maxRetries: 20,
+    proximityThreshold: 80,
   };
 
   // --- URL param: ?to=Name ---
@@ -306,36 +348,43 @@ button {
   var noBtn = document.getElementById('noBtn');
   var tauntText = document.getElementById('tauntText');
   var successOverlay = document.getElementById('successOverlay');
+  var noOverlay = document.getElementById('noOverlay');
+  var noOverlayClose = document.getElementById('noOverlayClose');
   var statusText = document.getElementById('statusText');
   var canvas = document.getElementById('confettiCanvas');
   var startOverBtn = document.getElementById('startOver');
 
   // --- State ---
   var noDodgeCount = 0;
-  var arenaRect = arena.getBoundingClientRect();
+  var currentNoX = 0;
+  var currentNoY = 0;
   var isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // --- Background hearts ---
-  function createBgHearts() {
+  // --- Background floating emojis ---
+  function createFloaters() {
     if (isReducedMotion) return;
-    var container = document.getElementById('bgHearts');
-    var hearts = ['💕', '💗', '💖', '❤️', '💘', '🩷', '♥'];
-    for (var i = 0; i < 15; i++) {
+    var container = document.getElementById('bgFloaters');
+    var emojis = [
+      '🐶', '🐕', '🐩', '🐱', '🐈', '🐈‍⬛',
+      '💕', '💗', '💖', '❤️', '💘', '♥',
+      '🤖', '🦾', '🔩',
+      '🐹', '🐿️', '🦫'
+    ];
+    for (var i = 0; i < 20; i++) {
       var span = document.createElement('span');
-      span.className = 'heart';
-      span.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      span.className = 'floater';
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
       span.style.left = Math.random() * 100 + '%';
-      span.style.fontSize = (14 + Math.random() * 18) + 'px';
-      span.style.animationDuration = (6 + Math.random() * 8) + 's';
-      span.style.animationDelay = (Math.random() * 10) + 's';
+      span.style.fontSize = (18 + Math.random() * 22) + 'px';
+      span.style.animationDuration = (7 + Math.random() * 10) + 's';
+      span.style.animationDelay = (Math.random() * 12) + 's';
       container.appendChild(span);
     }
   }
-  createBgHearts();
+  createFloaters();
 
   // --- Safe positions (fallback) ---
   function getSafePositions() {
-    arenaRect = arena.getBoundingClientRect();
     var noW = noBtn.offsetWidth;
     var noH = noBtn.offsetHeight;
     var pad = CONFIG.minPadding;
@@ -360,6 +409,18 @@ button {
     return !(ax + aw <= bx || bx + bw <= ax || ay + ah <= by || by + bh <= ay);
   }
 
+  // --- Get Yes button position relative to arena ---
+  function getYesRelative() {
+    var arenaR = arena.getBoundingClientRect();
+    var yesR = yesBtn.getBoundingClientRect();
+    return {
+      x: yesR.left - arenaR.left,
+      y: yesR.top - arenaR.top,
+      w: yesR.width,
+      h: yesR.height
+    };
+  }
+
   // --- Move No button ---
   function moveNo() {
     noDodgeCount++;
@@ -368,20 +429,13 @@ button {
     var aH = arena.offsetHeight;
     var noW = noBtn.offsetWidth;
     var noH = noBtn.offsetHeight;
-
-    // Yes button rect relative to arena
-    var arenaR = arena.getBoundingClientRect();
-    var yesR = yesBtn.getBoundingClientRect();
-    var yesX = yesR.left - arenaR.left;
-    var yesY = yesR.top - arenaR.top;
-    var yesW = yesR.width;
-    var yesH = yesR.height;
+    var yes = getYesRelative();
 
     var x, y, found = false;
     for (var i = 0; i < CONFIG.maxRetries; i++) {
       x = pad + Math.random() * (aW - noW - pad * 2);
       y = pad + Math.random() * (aH - noH - pad * 2);
-      if (!rectsOverlap(x, y, noW, noH, yesX, yesY, yesW, yesH)) {
+      if (!rectsOverlap(x, y, noW, noH, yes.x, yes.y, yes.w, yes.h)) {
         found = true;
         break;
       }
@@ -390,7 +444,7 @@ button {
     if (!found) {
       var safe = getSafePositions();
       for (var s = 0; s < safe.length; s++) {
-        if (!rectsOverlap(safe[s].x, safe[s].y, noW, noH, yesX, yesY, yesW, yesH)) {
+        if (!rectsOverlap(safe[s].x, safe[s].y, noW, noH, yes.x, yes.y, yes.w, yes.h)) {
           x = safe[s].x;
           y = safe[s].y;
           found = true;
@@ -404,12 +458,8 @@ button {
       y = aH - noH - pad;
     }
 
-    // Speed up dodge animation as count increases
-    var speed = Math.max(80, CONFIG.dodgeTransitionMs - noDodgeCount * 12);
-    if (!isReducedMotion) {
-      noBtn.style.transition = 'transform ' + speed + 'ms ease-out';
-    }
-
+    currentNoX = x;
+    currentNoY = y;
     noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
     // Taunt text
@@ -425,14 +475,33 @@ button {
     var noH = noBtn.offsetHeight;
     var x = aW - noW - pad - 10;
     var y = arena.offsetHeight - noH - pad;
+    currentNoX = x;
+    currentNoY = y;
     noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
   }
 
   requestAnimationFrame(placeNoInitial);
 
-  // --- Desktop: mouseenter dodge ---
-  noBtn.addEventListener('mouseenter', function() {
-    moveNo();
+  // --- Proximity-based dodge (desktop) ---
+  // Tracks mouse position within the arena and dodges when pointer
+  // gets within threshold distance of the No button center.
+  arena.addEventListener('mousemove', function(e) {
+    var arenaR = arena.getBoundingClientRect();
+    var mouseX = e.clientX - arenaR.left;
+    var mouseY = e.clientY - arenaR.top;
+
+    var noW = noBtn.offsetWidth;
+    var noH = noBtn.offsetHeight;
+    var noCenterX = currentNoX + noW / 2;
+    var noCenterY = currentNoY + noH / 2;
+
+    var dx = mouseX - noCenterX;
+    var dy = mouseY - noCenterY;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < CONFIG.proximityThreshold) {
+      moveNo();
+    }
   });
 
   // --- Mobile: touchstart / pointerdown dodge ---
@@ -450,12 +519,26 @@ button {
     }
   });
 
-  // --- Keyboard: allow but show playful message ---
+  // --- Keyboard: show groundhog image ---
   noBtn.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      tauntText.textContent = "You're stuck with me 😌";
+      showNoOverlay();
     }
+  });
+
+  // --- Fallback: if No somehow gets clicked, show groundhog ---
+  noBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    showNoOverlay();
+  });
+
+  function showNoOverlay() {
+    noOverlay.classList.add('show');
+  }
+
+  noOverlayClose.addEventListener('click', function() {
+    noOverlay.classList.remove('show');
   });
 
   // --- Yes button ---
@@ -472,6 +555,7 @@ button {
   // --- Start over ---
   startOverBtn.addEventListener('click', function() {
     successOverlay.classList.remove('show');
+    noOverlay.classList.remove('show');
     noDodgeCount = 0;
     tauntText.textContent = '';
     statusText.textContent = '';
@@ -483,7 +567,6 @@ button {
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function() {
-      arenaRect = arena.getBoundingClientRect();
       placeNoInitial();
       noDodgeCount = 0;
       tauntText.textContent = '';
@@ -499,7 +582,6 @@ button {
 
     var pieces = [];
     var colors = ['#e91e63', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#e040fb', '#ff4081', '#f8bbd0', '#d32f2f'];
-    var shapes = ['rect', 'heart'];
 
     for (var i = 0; i < 120; i++) {
       pieces.push({
@@ -511,7 +593,7 @@ button {
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
         rotSpeed: (Math.random() - 0.5) * 12,
-        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        isHeart: Math.random() > 0.5,
         gravity: 0.25 + Math.random() * 0.15,
         opacity: 1,
       });
@@ -558,7 +640,7 @@ button {
         ctx.globalAlpha = p.opacity;
         ctx.fillStyle = p.color;
 
-        if (p.shape === 'heart') {
+        if (p.isHeart) {
           drawHeart(ctx, 0, 0, p.size);
         } else {
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);

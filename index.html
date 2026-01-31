@@ -165,43 +165,100 @@ button {
   font-weight: 500;
 }
 
-/* No-click overlay (groundhog image) */
-#noOverlay {
+/* Groundhog in success state */
+#successGroundhog {
+  max-width: 200px;
+  width: 60%;
+  border-radius: 14px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}
+
+/* Fake error popup */
+#fakeError {
   display: none;
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.97);
-  border-radius: 22px;
-  z-index: 10;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  animation: fadeScale 0.35s ease-out;
-}
-#noOverlay.show { display: flex; }
-#noOverlay img {
-  max-width: 280px;
-  width: 80%;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-}
-#noOverlay .no-msg {
-  font-size: clamp(18px, 4vw, 26px);
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 12px;
-}
-#noOverlayClose {
-  background: var(--yes-bg);
-  color: #fff;
-  font-size: 15px;
-  padding: 10px 28px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 200;
+  background: #fff;
   border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.08);
+  width: 340px;
+  max-width: 90vw;
+  overflow: hidden;
+  opacity: 0;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+#fakeError.show {
+  display: block;
+  animation: errorPop 0.35s ease-out forwards;
+}
+@keyframes errorPop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  60% { transform: translate(-50%, -50%) scale(1.03); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes errorPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  }
+}
+#fakeError .error-titlebar {
+  background: #d32f2f;
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#fakeError .error-titlebar .error-icon {
+  font-size: 18px;
+}
+#fakeError .error-body {
+  padding: 24px 20px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+#fakeError .error-warn-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+#fakeError .error-text {
+  font-size: 14px;
+  color: #222;
+  line-height: 1.5;
+}
+#fakeError .error-text strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+#fakeError .error-actions {
+  padding: 8px 20px 18px;
+  text-align: right;
+}
+#fakeErrorOk {
+  background: #d32f2f;
+  color: #fff;
   border: none;
+  border-radius: 6px;
+  padding: 8px 32px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  min-height: 42px;
+  min-height: 36px;
+  font-family: inherit;
+}
+#fakeErrorOk:hover {
+  background: #b71c1c;
 }
 
 /* Success state */
@@ -287,15 +344,10 @@ button {
   <p id="tauntText" aria-live="polite"></p>
   <p id="hintText">(Try clicking No… if you can 😌)</p>
 
-  <div id="noOverlay">
-    <img src="groundhog.png" alt="Screaming groundhog saying Ahhh!">
-    <div class="no-msg">Nice try! 😏</div>
-    <button id="noOverlayClose">Fine, I'll reconsider...</button>
-  </div>
-
   <div id="successOverlay">
     <div id="successTitle">YAY! It's a date 😌💞</div>
     <p id="successBody">Text me what time works?</p>
+    <img id="successGroundhog" src="groundhog.png" alt="Excited groundhog saying Ahhh!">
     <button id="startOver">Start over</button>
   </div>
 
@@ -303,6 +355,23 @@ button {
 </main>
 
 <canvas id="confettiCanvas"></canvas>
+
+<div id="fakeError">
+  <div class="error-titlebar">
+    <span class="error-icon">⚠️</span>
+    <span>System Error</span>
+  </div>
+  <div class="error-body">
+    <span class="error-warn-icon">🚨</span>
+    <div class="error-text">
+      <strong>Critical Warning</strong>
+      p.s. i love you
+    </div>
+  </div>
+  <div class="error-actions">
+    <button id="fakeErrorOk">OK</button>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -348,11 +417,11 @@ button {
   var noBtn = document.getElementById('noBtn');
   var tauntText = document.getElementById('tauntText');
   var successOverlay = document.getElementById('successOverlay');
-  var noOverlay = document.getElementById('noOverlay');
-  var noOverlayClose = document.getElementById('noOverlayClose');
   var statusText = document.getElementById('statusText');
   var canvas = document.getElementById('confettiCanvas');
   var startOverBtn = document.getElementById('startOver');
+  var fakeError = document.getElementById('fakeError');
+  var fakeErrorOk = document.getElementById('fakeErrorOk');
 
   // --- State ---
   var noDodgeCount = 0;
@@ -519,26 +588,12 @@ button {
     }
   });
 
-  // --- Keyboard: show groundhog image ---
+  // --- Keyboard: playful message ---
   noBtn.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      showNoOverlay();
+      tauntText.textContent = "You're stuck with me 😌";
     }
-  });
-
-  // --- Fallback: if No somehow gets clicked, show groundhog ---
-  noBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    showNoOverlay();
-  });
-
-  function showNoOverlay() {
-    noOverlay.classList.add('show');
-  }
-
-  noOverlayClose.addEventListener('click', function() {
-    noOverlay.classList.remove('show');
   });
 
   // --- Yes button ---
@@ -546,16 +601,27 @@ button {
     showSuccess();
   });
 
+  var errorTimer = null;
+
   function showSuccess() {
     successOverlay.classList.add('show');
     statusText.textContent = CONFIG.successTitle;
     launchConfetti();
+    // Show fake error after a delay
+    errorTimer = setTimeout(function() {
+      fakeError.classList.add('show');
+    }, 3000);
   }
+
+  fakeErrorOk.addEventListener('click', function() {
+    fakeError.classList.remove('show');
+  });
 
   // --- Start over ---
   startOverBtn.addEventListener('click', function() {
     successOverlay.classList.remove('show');
-    noOverlay.classList.remove('show');
+    fakeError.classList.remove('show');
+    if (errorTimer) clearTimeout(errorTimer);
     noDodgeCount = 0;
     tauntText.textContent = '';
     statusText.textContent = '';

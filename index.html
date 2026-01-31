@@ -706,8 +706,18 @@ button {
   });
 
 
-  // --- Fallback: if No somehow gets clicked ---
+  // --- Prevent keyboard access entirely ---
+  noBtn.addEventListener('focus', function() {
+    noBtn.blur();
+  });
+  noBtn.addEventListener('keydown', function(e) {
+    e.preventDefault();
+  });
+
+  // --- Fallback: if No somehow gets clicked (pointer only) ---
   noBtn.addEventListener('click', function(e) {
+    // Only trigger from real pointer clicks, not keyboard Enter
+    if (!e.detail && !e.pointerType) return;
     e.preventDefault();
     showReject();
   });

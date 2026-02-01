@@ -6,23 +6,29 @@ layout: null
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="description" content="A very important question.">
+<meta name="theme-color" content="#e91e63">
 <title>Will you be my Valentine?</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/*
+ * If you're reading this, you're probably the kind of person
+ * who reads source code on a first date. I respect that.
+ *
+ * ...the answer is still yes, by the way.
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
   --pink: #e91e63;
-  --pink-light: #f8bbd0;
-  --pink-dark: #c2185b;
-  --card-bg: rgba(255,255,255,0.92);
+  --pink-hover: #c2185b;
+  --card-bg: rgba(255, 255, 255, 0.92);
   --text: #4a1942;
   --text-muted: #8e6585;
-  --yes-bg: #e91e63;
-  --yes-hover: #c2185b;
-  --no-bg: #f5f5f5;
-  --no-border: #ccc;
-  --no-text: #555;
-  --success-bg: #fff;
 }
 
 html, body {
@@ -37,7 +43,8 @@ html, body {
   color: var(--text);
 }
 
-/* Floating emoji background */
+/* ── Floating background emojis ── */
+
 .bg-floaters {
   position: fixed;
   inset: 0;
@@ -45,37 +52,45 @@ html, body {
   overflow: hidden;
   z-index: 0;
 }
+
 .bg-floaters .floater {
   position: absolute;
   opacity: 0.18;
   animation: floatUp linear infinite;
 }
+
 @keyframes floatUp {
-  0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
-  10% { opacity: 0.2; }
-  50% { opacity: 0.28; }
-  90% { opacity: 0.15; }
+  0%   { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 0; }
+  10%  { opacity: 0.2; }
+  50%  { opacity: 0.28; }
+  90%  { opacity: 0.15; }
   100% { transform: translateY(-10vh) rotate(360deg) scale(1.1); opacity: 0; }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .bg-floaters .floater { animation: none !important; display: none; }
-  #noBtn { transition: none !important; }
+  .bg-floaters .floater {
+    animation: none !important;
+    display: none;
+  }
+  #noBtn {
+    transition: none !important;
+  }
 }
 
-/* Card */
+/* ── Card ── */
+
 #card {
   position: relative;
   z-index: 1;
   background: var(--card-bg);
   border-radius: 22px;
-  box-shadow: 0 8px 40px rgba(233,30,99,0.15), 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 40px rgba(233, 30, 99, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 32px 28px 28px;
   max-width: 560px;
   width: 92vw;
   text-align: center;
   backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   overflow: hidden;
 }
 
@@ -93,7 +108,8 @@ html, body {
   line-height: 1.4;
 }
 
-/* Arena */
+/* ── Arena (button playground) ── */
+
 #arena {
   position: relative;
   width: 100%;
@@ -105,7 +121,8 @@ html, body {
   #arena { height: 140px; }
 }
 
-/* Buttons — liquid glass style */
+/* ── Buttons — liquid glass ── */
+
 button {
   font-family: inherit;
   font-size: 17px;
@@ -121,19 +138,18 @@ button {
   overflow: hidden;
 }
 
-/* Shared glass effect base */
 .glass-btn {
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(255,255,255,0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
   box-shadow:
-    0 4px 24px rgba(0,0,0,0.08),
-    0 1px 3px rgba(0,0,0,0.06),
-    inset 0 1px 1px rgba(255,255,255,0.6),
-    inset 0 -1px 2px rgba(0,0,0,0.04);
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
-/* Glass shine highlight */
+
 .glass-btn::before {
   content: '';
   position: absolute;
@@ -143,8 +159,8 @@ button {
   height: 50%;
   background: linear-gradient(
     to bottom,
-    rgba(255,255,255,0.5) 0%,
-    rgba(255,255,255,0.15) 60%,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.15) 60%,
     transparent 100%
   );
   border-radius: 18px 18px 50% 50%;
@@ -152,9 +168,9 @@ button {
 }
 
 #yesBtn {
-  background: linear-gradient(135deg, rgba(233,30,99,0.75) 0%, rgba(194,24,91,0.8) 100%);
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.75), rgba(194, 24, 91, 0.8));
   color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   min-width: 180px;
   width: 60%;
   max-width: 240px;
@@ -166,19 +182,23 @@ button {
   font-size: 18px;
   letter-spacing: 0.3px;
 }
+
 #yesBtn:hover {
-  background: linear-gradient(135deg, rgba(233,30,99,0.88) 0%, rgba(194,24,91,0.92) 100%);
+  background: linear-gradient(135deg, rgba(233, 30, 99, 0.88), rgba(194, 24, 91, 0.92));
   transform: translateX(-50%) scale(1.05);
   box-shadow:
-    0 6px 32px rgba(233,30,99,0.3),
-    0 2px 6px rgba(0,0,0,0.08),
-    inset 0 1px 1px rgba(255,255,255,0.6),
-    inset 0 -1px 2px rgba(0,0,0,0.04);
+    0 6px 32px rgba(233, 30, 99, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
 }
-#yesBtn:active { transform: translateX(-50%) scale(0.97); }
+
+#yesBtn:active {
+  transform: translateX(-50%) scale(0.97);
+}
 
 #noBtn {
-  background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(240,240,245,0.45) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55), rgba(240, 240, 245, 0.45));
   color: #555;
   min-width: 120px;
   padding: 10px 20px;
@@ -191,14 +211,17 @@ button {
   -webkit-user-select: none;
   font-size: 16px;
 }
+
 #noBtn:hover {
-  background: linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(240,240,245,0.6) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(240, 240, 245, 0.6));
   box-shadow:
-    0 6px 28px rgba(0,0,0,0.1),
-    0 2px 6px rgba(0,0,0,0.06),
-    inset 0 1px 1px rgba(255,255,255,0.7),
-    inset 0 -1px 2px rgba(0,0,0,0.04);
+    0 6px 28px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.06),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.04);
 }
+
+/* ── Hint and taunt text ── */
 
 #hintText {
   font-size: 13px;
@@ -215,17 +238,125 @@ button {
   font-weight: 500;
 }
 
-/* Groundhog in success state */
+/* ── State overlays (shared) ── */
+
+.state-overlay {
+  display: none;
+  position: absolute;
+  inset: -40px;
+  background: #fff;
+  z-index: 50;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  animation: fadeScale 0.4s ease-out;
+}
+
+.state-overlay.show {
+  display: flex;
+}
+
+@keyframes fadeScale {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes fadeScale {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+}
+
+/* ── Success state ── */
+
+#successTitle {
+  font-size: clamp(24px, 5.5vw, 36px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+#successBody {
+  font-size: clamp(15px, 3.5vw, 18px);
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
 #successGroundhog {
   max-width: 200px;
   width: 60%;
   border-radius: 14px;
   margin-top: 12px;
   margin-bottom: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Fake error popup */
+#startOver {
+  background: none;
+  border: none;
+  color: var(--pink);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  min-height: auto;
+  padding: 4px 8px;
+}
+
+/* ── Rejection state ── */
+
+#rejectEmoji {
+  font-size: 64px;
+  margin-bottom: 12px;
+  animation: heartBreak 0.6s ease-out;
+}
+
+@keyframes heartBreak {
+  0%  { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes heartBreak {
+    0%, 100% { transform: scale(1); }
+  }
+}
+
+#rejectTitle {
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+#rejectBody {
+  font-size: clamp(14px, 3.5vw, 17px);
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+#repairBtn {
+  background: var(--pink);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  min-height: 46px;
+  font-family: inherit;
+  transition: background 0.2s, transform 0.1s;
+}
+
+#repairBtn:hover { background: var(--pink-hover); transform: scale(1.04); }
+#repairBtn:active { transform: scale(0.97); }
+
+/* ── Fake error dialog ── */
+
 #fakeError {
   display: none;
   position: fixed;
@@ -235,29 +366,33 @@ button {
   z-index: 200;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.08);
   width: 340px;
   max-width: 90vw;
   overflow: hidden;
   opacity: 0;
   font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
 }
+
 #fakeError.show {
   display: block;
   animation: errorPop 0.35s ease-out forwards;
 }
+
 @keyframes errorPop {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  0%  { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
   60% { transform: translate(-50%, -50%) scale(1.03); }
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 }
+
 @media (prefers-reduced-motion: reduce) {
   @keyframes errorPop {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 }
-#fakeError .error-titlebar {
+
+.error-titlebar {
   background: #d32f2f;
   color: #fff;
   padding: 10px 16px;
@@ -267,34 +402,37 @@ button {
   align-items: center;
   gap: 8px;
 }
-#fakeError .error-titlebar .error-icon {
-  font-size: 18px;
-}
-#fakeError .error-body {
+
+.error-body {
   padding: 24px 20px 16px;
   display: flex;
   align-items: flex-start;
   gap: 14px;
 }
-#fakeError .error-warn-icon {
+
+.error-warn-icon {
   font-size: 32px;
   flex-shrink: 0;
   line-height: 1;
 }
-#fakeError .error-text {
+
+.error-text {
   font-size: 14px;
   color: #222;
   line-height: 1.5;
 }
-#fakeError .error-text strong {
+
+.error-text strong {
   display: block;
   font-size: 15px;
   margin-bottom: 4px;
 }
-#fakeError .error-actions {
+
+.error-actions {
   padding: 8px 20px 18px;
   text-align: right;
 }
+
 #fakeErrorOk {
   background: #d32f2f;
   color: #fff;
@@ -307,118 +445,13 @@ button {
   min-height: 36px;
   font-family: inherit;
 }
+
 #fakeErrorOk:hover {
   background: #b71c1c;
 }
 
-/* Success state */
-#successOverlay {
-  display: none;
-  position: absolute;
-  inset: -40px;
-  background: #fff;
-  border-radius: 0;
-  z-index: 50;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 24px;
-  animation: fadeScale 0.4s ease-out;
-}
-#successOverlay.show { display: flex; }
+/* ── Confetti canvas ── */
 
-@keyframes fadeScale {
-  0% { opacity: 0; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  @keyframes fadeScale {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-}
-
-#successTitle {
-  font-size: clamp(24px, 5.5vw, 36px);
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-#successBody {
-  font-size: clamp(15px, 3.5vw, 18px);
-  color: var(--text-muted);
-  margin-bottom: 20px;
-}
-#startOver {
-  background: none;
-  border: none;
-  color: var(--pink);
-  font-size: 14px;
-  cursor: pointer;
-  text-decoration: underline;
-  min-height: auto;
-  padding: 4px 8px;
-}
-
-/* Rejection / No state */
-#rejectOverlay {
-  display: none;
-  position: absolute;
-  inset: -40px;
-  background: #fff;
-  border-radius: 0;
-  z-index: 50;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 28px 24px;
-  animation: fadeScale 0.4s ease-out;
-}
-#rejectOverlay.show { display: flex; }
-#rejectEmoji {
-  font-size: 64px;
-  margin-bottom: 12px;
-  animation: heartBreak 0.6s ease-out;
-}
-@keyframes heartBreak {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.3); }
-  50% { transform: scale(0.9); }
-  100% { transform: scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  @keyframes heartBreak {
-    0%, 100% { transform: scale(1); }
-  }
-}
-#rejectTitle {
-  font-size: clamp(22px, 5vw, 32px);
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 8px;
-}
-#rejectBody {
-  font-size: clamp(14px, 3.5vw, 17px);
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  line-height: 1.4;
-}
-#repairBtn {
-  background: var(--yes-bg);
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 12px 28px;
-  border-radius: 14px;
-  border: none;
-  cursor: pointer;
-  min-height: 46px;
-  font-family: inherit;
-  transition: background 0.2s, transform 0.1s;
-}
-#repairBtn:hover { background: var(--yes-hover); transform: scale(1.04); }
-#repairBtn:active { transform: scale(0.97); }
-
-/* Confetti canvas */
 #confettiCanvas {
   position: fixed;
   inset: 0;
@@ -426,59 +459,60 @@ button {
   z-index: 100;
 }
 
-/* Status for screen readers */
-#statusText {
+/* ── Screen reader only ── */
+
+.sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
 </style>
 </head>
 <body>
 
-<div class="bg-floaters" id="bgFloaters"></div>
+<div class="bg-floaters" id="bgFloaters" aria-hidden="true"></div>
 
 <main id="card">
   <h1 id="messageTitle">Will you be my Valentine? 💌</h1>
   <p id="messageBody">I promise snacks, cuddles, and good vibes.</p>
 
-  <div id="arena">
+  <div id="arena" role="group" aria-label="Response buttons">
     <button id="yesBtn" class="glass-btn">Yes 💘</button>
-    <button id="noBtn" class="glass-btn" tabindex="-1">No 🙃</button>
+    <button id="noBtn" class="glass-btn" tabindex="-1" aria-hidden="true">No 🙃</button>
   </div>
 
   <p id="tauntText" aria-live="polite"></p>
   <p id="hintText">(Try clicking No… if you can 😌)</p>
 
-  <div id="successOverlay">
+  <div id="successOverlay" class="state-overlay" role="alert">
     <div id="successTitle">YAY! It's a date 😌💞</div>
     <p id="successBody">Text me what time works?</p>
-    <img id="successGroundhog" src="groundhog.png" alt="Excited groundhog saying Ahhh!">
+    <img id="successGroundhog" src="groundhog.png" alt="Excited groundhog" loading="lazy">
     <button id="startOver">Start over</button>
   </div>
 
-  <div id="rejectOverlay">
-    <div id="rejectEmoji">💔😭</div>
+  <div id="rejectOverlay" class="state-overlay">
+    <div id="rejectEmoji" aria-hidden="true">💔😭</div>
     <div id="rejectTitle">You broke my heart...</div>
     <p id="rejectBody">This wasn't supposed to happen. There's still time to fix this.</p>
     <button id="repairBtn">Repair broken heart 🩹💗</button>
   </div>
 
-  <div id="statusText" aria-live="polite" role="status"></div>
+  <div id="statusText" class="sr-only" aria-live="polite" role="status"></div>
 </main>
 
-<canvas id="confettiCanvas"></canvas>
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
 
-<div id="fakeError">
+<div id="fakeError" role="dialog" aria-labelledby="fakeErrorTitle">
   <div class="error-titlebar">
-    <span class="error-icon">⚠️</span>
-    <span>System Error</span>
+    <span aria-hidden="true">⚠️</span>
+    <span id="fakeErrorTitle">System Error</span>
   </div>
   <div class="error-body">
-    <span class="error-warn-icon">🚨</span>
+    <span class="error-warn-icon" aria-hidden="true">🚨</span>
     <div class="error-text">
       <strong>Critical Warning</strong>
       p.s. i love you
@@ -490,18 +524,23 @@ button {
 </div>
 
 <script>
+/**
+ * Valentine Yes/No — a very serious application.
+ *
+ * Architecture notes for the curious:
+ * - No button uses proximity-based evasion (Euclidean distance)
+ * - Mobile uses full touch event chain interception
+ * - Collision detection prevents No from overlapping Yes
+ * - If you're reading this... just click Yes already.
+ */
 (function() {
   'use strict';
 
-  // --- Config ---
+  /* ── Configuration ── */
+
   var CONFIG = {
-    titleText: 'Will you be my Valentine? 💌',
-    subtitleText: 'I promise snacks, cuddles, and good vibes.',
-    successTitle: 'YAY! It\'s a date 😌💞',
-    successSubtitle: 'Text me what time works?',
     noTaunts: [
-      '',
-      '',
+      '', '',
       'Are you sure? 🥺',
       'Think again... 💭',
       'Really?? 😢',
@@ -511,114 +550,128 @@ button {
       'Be serious 😭',
       'PLEASE 🙏',
       'I won\'t give up 😤',
-      'Last chance... 👉👈',
+      'Last chance... 👉👈'
     ],
-    minPadding: 12,
+    padding: 12,
     maxRetries: 20,
     proximityThreshold: 80,
+    errorDelay: 3000
   };
 
-  // --- URL param: ?to=Name ---
+  /* ── URL personalization (?to=Name) ── */
+
   var params = new URLSearchParams(window.location.search);
-  var recipientName = params.get('to');
-  if (recipientName) {
-    var safe = recipientName.replace(/[<>"'&]/g, '');
-    CONFIG.titleText = safe + ', will you be my Valentine? 💌';
-    document.getElementById('messageTitle').textContent = CONFIG.titleText;
+  var recipient = params.get('to');
+  if (recipient) {
+    var safeName = recipient.replace(/[<>"'&]/g, '');
+    document.getElementById('messageTitle').textContent =
+      safeName + ', will you be my Valentine? 💌';
   }
 
-  // --- DOM refs ---
-  var arena = document.getElementById('arena');
-  var yesBtn = document.getElementById('yesBtn');
-  var noBtn = document.getElementById('noBtn');
-  var tauntText = document.getElementById('tauntText');
-  var successOverlay = document.getElementById('successOverlay');
-  var statusText = document.getElementById('statusText');
-  var canvas = document.getElementById('confettiCanvas');
-  var startOverBtn = document.getElementById('startOver');
-  var fakeError = document.getElementById('fakeError');
-  var fakeErrorOk = document.getElementById('fakeErrorOk');
-  var rejectOverlay = document.getElementById('rejectOverlay');
-  var repairBtn = document.getElementById('repairBtn');
+  /* ── DOM references ── */
 
-  // --- State ---
-  var noDodgeCount = 0;
-  var currentNoX = 0;
-  var currentNoY = 0;
-  var isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id) { return document.getElementById(id); };
 
-  // --- Background floating emojis ---
+  var arena         = $('arena');
+  var yesBtn        = $('yesBtn');
+  var noBtn         = $('noBtn');
+  var tauntText     = $('tauntText');
+  var successOverlay = $('successOverlay');
+  var rejectOverlay = $('rejectOverlay');
+  var statusText    = $('statusText');
+  var canvas        = $('confettiCanvas');
+  var startOverBtn  = $('startOver');
+  var repairBtn     = $('repairBtn');
+  var fakeError     = $('fakeError');
+  var fakeErrorOk   = $('fakeErrorOk');
+
+  /* ── State ── */
+
+  var dodgeCount = 0;
+  var noX = 0;
+  var noY = 0;
+  var errorTimer = null;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Easter egg ── */
+
+  console.log(
+    '%c💌 Hey, you found the console! %c\n\n' +
+    'Since you\'re here, I\'ll let you in on a secret:\n' +
+    'The No button uses Euclidean distance collision avoidance.\n' +
+    'Pretty fancy for a love letter, right?\n\n' +
+    'P.S. The answer should definitely be Yes.\n' +
+    'P.P.S. Try: document.getElementById(\'rejectOverlay\').classList.add(\'show\')\n' +
+    '...but you didn\'t hear that from me. 🤫\n',
+    'color: #e91e63; font-size: 16px; font-weight: bold;',
+    'color: #4a1942; font-size: 13px;'
+  );
+
+  /* ── Background floaters ── */
+
   function createFloaters() {
-    if (isReducedMotion) return;
-    var container = document.getElementById('bgFloaters');
+    if (reducedMotion) return;
+    var container = $('bgFloaters');
     var emojis = [
-      '🐶', '🐕', '🐩', '🐱', '🐈', '🐈‍⬛',
-      '💕', '💗', '💖', '❤️', '💘', '♥',
-      '🤖', '🦾', '🔩',
-      '🐹', '🐿️', '🦫'
+      '\uD83D\uDC36', '\uD83D\uDC15', '\uD83D\uDC29',       // dogs
+      '\uD83D\uDC31', '\uD83D\uDC08',                         // cats
+      '\uD83D\uDC95', '\uD83D\uDC97', '\uD83D\uDC96', '❤️', '\uD83D\uDC98', '♥', // hearts
+      '\uD83E\uDD16',                                          // robot
+      '\uD83D\uDC39', '\uD83E\uDDAB'                           // small critters
     ];
     for (var i = 0; i < 20; i++) {
-      var span = document.createElement('span');
-      span.className = 'floater';
-      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      span.style.left = Math.random() * 100 + '%';
-      span.style.fontSize = (18 + Math.random() * 22) + 'px';
-      span.style.animationDuration = (7 + Math.random() * 10) + 's';
-      span.style.animationDelay = (Math.random() * 12) + 's';
-      container.appendChild(span);
+      var el = document.createElement('span');
+      el.className = 'floater';
+      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      el.style.left = (Math.random() * 100) + '%';
+      el.style.fontSize = (18 + Math.random() * 22) + 'px';
+      el.style.animationDuration = (7 + Math.random() * 10) + 's';
+      el.style.animationDelay = (Math.random() * 12) + 's';
+      container.appendChild(el);
     }
   }
-  createFloaters();
 
-  // --- Safe positions (fallback) ---
-  function getSafePositions() {
-    var noW = noBtn.offsetWidth;
-    var noH = noBtn.offsetHeight;
-    var pad = CONFIG.minPadding;
+  /* ── Geometry helpers ── */
+
+  function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+  }
+
+  function getYesRect() {
+    var ar = arena.getBoundingClientRect();
+    var yr = yesBtn.getBoundingClientRect();
+    return { x: yr.left - ar.left, y: yr.top - ar.top, w: yr.width, h: yr.height };
+  }
+
+  function getSafePositions(noW, noH) {
+    var pad = CONFIG.padding;
     var aW = arena.offsetWidth;
     var aH = arena.offsetHeight;
-    var maxX = aW - noW - pad;
-    var maxY = aH - noH - pad;
+    var mx = aW - noW - pad;
+    var my = aH - noH - pad;
+    var cx = (aW - noW) / 2;
+    var cy = (aH - noH) / 2;
     return [
-      { x: pad, y: pad },
-      { x: maxX, y: pad },
-      { x: pad, y: maxY },
-      { x: maxX, y: maxY },
-      { x: aW / 2 - noW / 2, y: pad },
-      { x: aW / 2 - noW / 2, y: maxY },
-      { x: pad, y: aH / 2 - noH / 2 },
-      { x: maxX, y: aH / 2 - noH / 2 },
+      { x: pad, y: pad }, { x: mx, y: pad },
+      { x: pad, y: my },  { x: mx, y: my },
+      { x: cx, y: pad },  { x: cx, y: my },
+      { x: pad, y: cy },  { x: mx, y: cy }
     ];
   }
 
-  // --- Overlap check ---
-  function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
-    return !(ax + aw <= bx || bx + bw <= ax || ay + ah <= by || by + bh <= ay);
-  }
+  /* ── No button movement ── */
 
-  // --- Get Yes button position relative to arena ---
-  function getYesRelative() {
-    var arenaR = arena.getBoundingClientRect();
-    var yesR = yesBtn.getBoundingClientRect();
-    return {
-      x: yesR.left - arenaR.left,
-      y: yesR.top - arenaR.top,
-      w: yesR.width,
-      h: yesR.height
-    };
-  }
-
-  // --- Move No button ---
   function moveNo() {
-    noDodgeCount++;
-    var pad = CONFIG.minPadding;
+    dodgeCount++;
+    var pad = CONFIG.padding;
     var aW = arena.offsetWidth;
     var aH = arena.offsetHeight;
     var noW = noBtn.offsetWidth;
     var noH = noBtn.offsetHeight;
-    var yes = getYesRelative();
+    var yes = getYesRect();
 
     var x, y, found = false;
+
     for (var i = 0; i < CONFIG.maxRetries; i++) {
       x = pad + Math.random() * (aW - noW - pad * 2);
       y = pad + Math.random() * (aH - noH - pad * 2);
@@ -629,11 +682,12 @@ button {
     }
 
     if (!found) {
-      var safe = getSafePositions();
-      for (var s = 0; s < safe.length; s++) {
-        if (!rectsOverlap(safe[s].x, safe[s].y, noW, noH, yes.x, yes.y, yes.w, yes.h)) {
-          x = safe[s].x;
-          y = safe[s].y;
+      var positions = getSafePositions(noW, noH);
+      for (var j = 0; j < positions.length; j++) {
+        var p = positions[j];
+        if (!rectsOverlap(p.x, p.y, noW, noH, yes.x, yes.y, yes.w, yes.h)) {
+          x = p.x;
+          y = p.y;
           found = true;
           break;
         }
@@ -645,218 +699,191 @@ button {
       y = aH - noH - pad;
     }
 
-    currentNoX = x;
-    currentNoY = y;
+    noX = x;
+    noY = y;
     noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
-    // Taunt text
-    var ti = Math.min(noDodgeCount, CONFIG.noTaunts.length - 1);
-    tauntText.textContent = CONFIG.noTaunts[ti] || '';
+    var tauntIndex = Math.min(dodgeCount, CONFIG.noTaunts.length - 1);
+    tauntText.textContent = CONFIG.noTaunts[tauntIndex];
   }
 
-  // --- Initial placement: centered below Yes ---
-  function placeNoInitial() {
+  function placeNoCenter() {
     var aW = arena.offsetWidth;
     var aH = arena.offsetHeight;
     var noW = noBtn.offsetWidth;
     var noH = noBtn.offsetHeight;
-    var x = (aW - noW) / 2;
-    var y = aH - noH - CONFIG.minPadding;
-    currentNoX = x;
-    currentNoY = y;
-    noBtn.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+    noX = (aW - noW) / 2;
+    noY = aH - noH - CONFIG.padding;
+    noBtn.style.transform = 'translate(' + noX + 'px, ' + noY + 'px)';
   }
 
-  requestAnimationFrame(placeNoInitial);
+  /* ── Event listeners ── */
 
-  // --- Proximity-based dodge (desktop) ---
-  // Tracks mouse position within the arena and dodges when pointer
-  // gets within threshold distance of the No button center.
+  // Desktop: proximity-based dodge
   arena.addEventListener('mousemove', function(e) {
-    var arenaR = arena.getBoundingClientRect();
-    var mouseX = e.clientX - arenaR.left;
-    var mouseY = e.clientY - arenaR.top;
-
-    var noW = noBtn.offsetWidth;
-    var noH = noBtn.offsetHeight;
-    var noCenterX = currentNoX + noW / 2;
-    var noCenterY = currentNoY + noH / 2;
-
-    var dx = mouseX - noCenterX;
-    var dy = mouseY - noCenterY;
-    var dist = Math.sqrt(dx * dx + dy * dy);
+    var rect = arena.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    var cx = noX + noBtn.offsetWidth / 2;
+    var cy = noY + noBtn.offsetHeight / 2;
+    var dist = Math.sqrt((mx - cx) * (mx - cx) + (my - cy) * (my - cy));
 
     if (dist < CONFIG.proximityThreshold) {
       moveNo();
     }
   });
 
-  // --- Mobile: block ALL touch interaction and dodge ---
-  // touchstart: dodge + prevent default to stop click chain
-  noBtn.addEventListener('touchstart', function(e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    moveNo();
-  }, { passive: false });
+  // Mobile: intercept entire touch lifecycle
+  var touchEvents = ['touchstart', 'touchend', 'touchmove'];
+  touchEvents.forEach(function(evt) {
+    noBtn.addEventListener(evt, function(e) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (evt === 'touchstart') moveNo();
+    }, { passive: false });
+  });
 
-  // touchend: prevent tap from completing
-  noBtn.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-  }, { passive: false });
-
-  // touchmove: prevent any gesture
-  noBtn.addEventListener('touchmove', function(e) {
-    e.preventDefault();
-  }, { passive: false });
-
-  // pointerdown: catch all pointer types on mobile
+  // Pointer events for touch/pen devices
   noBtn.addEventListener('pointerdown', function(e) {
-    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+    if (e.pointerType !== 'mouse') {
       e.preventDefault();
       e.stopImmediatePropagation();
       moveNo();
     }
   });
 
-  // pointerup: prevent tap completion on mobile
   noBtn.addEventListener('pointerup', function(e) {
-    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+    if (e.pointerType !== 'mouse') {
       e.preventDefault();
       e.stopImmediatePropagation();
     }
   });
 
-  // --- Prevent keyboard access entirely ---
-  noBtn.addEventListener('focus', function() {
-    noBtn.blur();
-  });
-  noBtn.addEventListener('keydown', function(e) {
-    e.preventDefault();
-  });
+  // Block keyboard access
+  noBtn.addEventListener('focus', function() { noBtn.blur(); });
+  noBtn.addEventListener('keydown', function(e) { e.preventDefault(); });
 
-  // --- Fallback: if No somehow gets clicked (desktop pointer only) ---
+  // Last resort: if click somehow fires, show rejection
   noBtn.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
-    // On mobile the touch handlers already moved the button,
-    // so this should only fire from a desktop mouse click
     showReject();
   });
+
+  // Yes button
+  yesBtn.addEventListener('click', showSuccess);
+
+  // Repair button (rejection state)
+  repairBtn.addEventListener('click', function() {
+    rejectOverlay.classList.remove('show');
+    resetState();
+  });
+
+  // Start over (success state)
+  startOverBtn.addEventListener('click', function() {
+    successOverlay.classList.remove('show');
+    fakeError.classList.remove('show');
+    if (errorTimer) clearTimeout(errorTimer);
+    resetState();
+  });
+
+  // Dismiss fake error
+  fakeErrorOk.addEventListener('click', function() {
+    fakeError.classList.remove('show');
+  });
+
+  // Responsive resize
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      placeNoCenter();
+      resetState();
+    }, 200);
+  });
+
+  /* ── State transitions ── */
+
+  function showSuccess() {
+    successOverlay.classList.add('show');
+    statusText.textContent = 'YAY! It\'s a date!';
+    launchConfetti();
+    errorTimer = setTimeout(function() {
+      fakeError.classList.add('show');
+    }, CONFIG.errorDelay);
+  }
 
   function showReject() {
     rejectOverlay.classList.add('show');
     statusText.textContent = 'You broke my heart...';
   }
 
-  repairBtn.addEventListener('click', function() {
-    rejectOverlay.classList.remove('show');
-    noDodgeCount = 0;
+  function resetState() {
+    dodgeCount = 0;
     tauntText.textContent = '';
     statusText.textContent = '';
-    placeNoInitial();
-  });
-
-  // --- Yes button ---
-  yesBtn.addEventListener('click', function() {
-    showSuccess();
-  });
-
-  var errorTimer = null;
-
-  function showSuccess() {
-    successOverlay.classList.add('show');
-    statusText.textContent = CONFIG.successTitle;
-    launchConfetti();
-    // Show fake error after a delay
-    errorTimer = setTimeout(function() {
-      fakeError.classList.add('show');
-    }, 3000);
+    placeNoCenter();
   }
 
-  fakeErrorOk.addEventListener('click', function() {
-    fakeError.classList.remove('show');
-  });
+  /* ── Confetti ── */
 
-  // --- Start over ---
-  startOverBtn.addEventListener('click', function() {
-    successOverlay.classList.remove('show');
-    fakeError.classList.remove('show');
-    rejectOverlay.classList.remove('show');
-    if (errorTimer) clearTimeout(errorTimer);
-    noDodgeCount = 0;
-    tauntText.textContent = '';
-    statusText.textContent = '';
-    placeNoInitial();
-  });
-
-  // --- Resize handler ---
-  var resizeTimer;
-  window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-      placeNoInitial();
-      noDodgeCount = 0;
-      tauntText.textContent = '';
-    }, 200);
-  });
-
-  // --- Confetti ---
   function launchConfetti() {
-    if (isReducedMotion) return;
+    if (reducedMotion) return;
+
     var ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    var pieces = [];
     var colors = ['#e91e63', '#f44336', '#ff5722', '#ff9800', '#ffc107', '#e040fb', '#ff4081', '#f8bbd0', '#d32f2f'];
+    var pieces = [];
 
     for (var i = 0; i < 120; i++) {
       pieces.push({
         x: canvas.width / 2 + (Math.random() - 0.5) * 200,
         y: canvas.height / 2 + (Math.random() - 0.5) * 100,
         vx: (Math.random() - 0.5) * 16,
-        vy: -Math.random() * 14 - 4,
+        vy: -(Math.random() * 14 + 4),
         size: 6 + Math.random() * 8,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 12,
-        isHeart: Math.random() > 0.5,
+        spin: (Math.random() - 0.5) * 12,
+        heart: Math.random() > 0.5,
         gravity: 0.25 + Math.random() * 0.15,
-        opacity: 1,
+        opacity: 1
       });
     }
 
-    var startTime = performance.now();
+    var t0 = performance.now();
     var duration = 2200;
 
-    function drawHeart(ctx, x, y, size) {
-      var s = size / 2;
+    function drawHeart(x, y, s) {
+      var r = s / 2;
       ctx.beginPath();
-      ctx.moveTo(x, y + s * 0.4);
-      ctx.bezierCurveTo(x, y - s * 0.2, x - s, y - s * 0.6, x - s, y + s * 0.05);
-      ctx.bezierCurveTo(x - s, y + s * 0.6, x, y + s, x, y + s * 1.1);
-      ctx.bezierCurveTo(x, y + s, x + s, y + s * 0.6, x + s, y + s * 0.05);
-      ctx.bezierCurveTo(x + s, y - s * 0.6, x, y - s * 0.2, x, y + s * 0.4);
+      ctx.moveTo(x, y + r * 0.4);
+      ctx.bezierCurveTo(x, y - r * 0.2, x - r, y - r * 0.6, x - r, y + r * 0.05);
+      ctx.bezierCurveTo(x - r, y + r * 0.6, x, y + r, x, y + r * 1.1);
+      ctx.bezierCurveTo(x, y + r, x + r, y + r * 0.6, x + r, y + r * 0.05);
+      ctx.bezierCurveTo(x + r, y - r * 0.6, x, y - r * 0.2, x, y + r * 0.4);
       ctx.fill();
     }
 
     function frame(now) {
-      var elapsed = now - startTime;
+      var elapsed = now - t0;
       if (elapsed > duration) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         return;
       }
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       var fadeStart = duration * 0.6;
+
       for (var j = 0; j < pieces.length; j++) {
         var p = pieces[j];
         p.x += p.vx;
         p.vy += p.gravity;
         p.y += p.vy;
         p.vx *= 0.985;
-        p.rotation += p.rotSpeed;
+        p.rotation += p.spin;
 
         if (elapsed > fadeStart) {
           p.opacity = Math.max(0, 1 - (elapsed - fadeStart) / (duration - fadeStart));
@@ -868,17 +895,26 @@ button {
         ctx.globalAlpha = p.opacity;
         ctx.fillStyle = p.color;
 
-        if (p.isHeart) {
-          drawHeart(ctx, 0, 0, p.size);
+        if (p.heart) {
+          drawHeart(0, 0, p.size);
         } else {
           ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
         }
+
         ctx.restore();
       }
+
       requestAnimationFrame(frame);
     }
+
     requestAnimationFrame(frame);
   }
+
+  /* ── Initialize ── */
+
+  createFloaters();
+  requestAnimationFrame(placeNoCenter);
+
 })();
 </script>
 </body>

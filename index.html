@@ -733,13 +733,25 @@ button {
     }
   });
 
-  // Mobile: intercept entire touch lifecycle
+  // Mobile: intercept entire touch lifecycle and briefly disable pointer events
+  var lastDodgeTime = 0;
+
+  function dodgeAndGuard() {
+    moveNo();
+    lastDodgeTime = Date.now();
+    // Briefly disable pointer-events so queued taps can't land
+    noBtn.style.pointerEvents = 'none';
+    setTimeout(function() {
+      noBtn.style.pointerEvents = '';
+    }, 300);
+  }
+
   var touchEvents = ['touchstart', 'touchend', 'touchmove'];
   touchEvents.forEach(function(evt) {
     noBtn.addEventListener(evt, function(e) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      if (evt === 'touchstart') moveNo();
+      if (evt === 'touchstart') dodgeAndGuard();
     }, { passive: false });
   });
 
@@ -748,7 +760,7 @@ button {
     if (e.pointerType !== 'mouse') {
       e.preventDefault();
       e.stopImmediatePropagation();
-      moveNo();
+      dodgeAndGuard();
     }
   });
 
@@ -763,10 +775,12 @@ button {
   noBtn.addEventListener('focus', function() { noBtn.blur(); });
   noBtn.addEventListener('keydown', function(e) { e.preventDefault(); });
 
-  // Last resort: if click somehow fires, show rejection
+  // Last resort: if click fires, only allow if not recently dodged
   noBtn.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
+    // If a dodge happened in the last 400ms, this click is a ghost — ignore it
+    if (Date.now() - lastDodgeTime < 400) return;
     showReject();
   });
 

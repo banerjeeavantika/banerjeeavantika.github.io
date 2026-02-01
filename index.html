@@ -733,34 +733,52 @@ button {
     }
   });
 
-  // Mobile: intercept entire touch lifecycle and briefly disable pointer events
-  var lastDodgeTime = 0;
+  // Mobile: detect touch device and disable No button clicks entirely
+  var isTouchDevice = false;
 
-  function dodgeAndGuard() {
-    moveNo();
-    lastDodgeTime = Date.now();
-    // Briefly disable pointer-events so queued taps can't land
+  // Mark as touch device on first touch
+  window.addEventListener('touchstart', function onFirstTouch() {
+    isTouchDevice = true;
+    // On touch devices, disable pointer-events on the actual button
+    // and use the arena-level touch handler instead
     noBtn.style.pointerEvents = 'none';
-    setTimeout(function() {
-      noBtn.style.pointerEvents = '';
-    }, 300);
-  }
+    window.removeEventListener('touchstart', onFirstTouch);
+  }, { passive: true });
 
+  // Arena-level touch interception: if a touch lands near the No button, dodge
+  arena.addEventListener('touchstart', function(e) {
+    var touch = e.touches[0];
+    if (!touch) return;
+    var rect = arena.getBoundingClientRect();
+    var tx = touch.clientX - rect.left;
+    var ty = touch.clientY - rect.top;
+
+    // Check if touch is near the No button (within button bounds + padding)
+    var hitPad = 20;
+    var noW = noBtn.offsetWidth;
+    var noH = noBtn.offsetHeight;
+    if (tx >= noX - hitPad && tx <= noX + noW + hitPad &&
+        ty >= noY - hitPad && ty <= noY + noH + hitPad) {
+      e.preventDefault();
+      moveNo();
+    }
+  }, { passive: false });
+
+  // Also intercept directly on the button as a backup
   var touchEvents = ['touchstart', 'touchend', 'touchmove'];
   touchEvents.forEach(function(evt) {
     noBtn.addEventListener(evt, function(e) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      if (evt === 'touchstart') dodgeAndGuard();
+      if (evt === 'touchstart') moveNo();
     }, { passive: false });
   });
 
-  // Pointer events for touch/pen devices
   noBtn.addEventListener('pointerdown', function(e) {
     if (e.pointerType !== 'mouse') {
       e.preventDefault();
       e.stopImmediatePropagation();
-      dodgeAndGuard();
+      moveNo();
     }
   });
 
@@ -775,12 +793,11 @@ button {
   noBtn.addEventListener('focus', function() { noBtn.blur(); });
   noBtn.addEventListener('keydown', function(e) { e.preventDefault(); });
 
-  // Last resort: if click fires, only allow if not recently dodged
+  // Click handler: only works on desktop (touch devices have pointer-events: none)
   noBtn.addEventListener('click', function(e) {
     e.preventDefault();
     e.stopImmediatePropagation();
-    // If a dodge happened in the last 400ms, this click is a ghost — ignore it
-    if (Date.now() - lastDodgeTime < 400) return;
+    if (isTouchDevice) return;
     showReject();
   });
 

@@ -690,21 +690,41 @@ button {
     }
   });
 
-  // --- Mobile: touchstart / pointerdown dodge ---
+  // --- Mobile: block ALL touch interaction and dodge ---
+  // touchstart: dodge + prevent default to stop click chain
   noBtn.addEventListener('touchstart', function(e) {
     e.preventDefault();
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     moveNo();
   }, { passive: false });
 
+  // touchend: prevent tap from completing
+  noBtn.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, { passive: false });
+
+  // touchmove: prevent any gesture
+  noBtn.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+
+  // pointerdown: catch all pointer types on mobile
   noBtn.addEventListener('pointerdown', function(e) {
     if (e.pointerType === 'touch' || e.pointerType === 'pen') {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopImmediatePropagation();
       moveNo();
     }
   });
 
+  // pointerup: prevent tap completion on mobile
+  noBtn.addEventListener('pointerup', function(e) {
+    if (e.pointerType === 'touch' || e.pointerType === 'pen') {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  });
 
   // --- Prevent keyboard access entirely ---
   noBtn.addEventListener('focus', function() {
@@ -714,11 +734,12 @@ button {
     e.preventDefault();
   });
 
-  // --- Fallback: if No somehow gets clicked (pointer only) ---
+  // --- Fallback: if No somehow gets clicked (desktop pointer only) ---
   noBtn.addEventListener('click', function(e) {
-    // Only trigger from real pointer clicks, not keyboard Enter
-    if (!e.detail && !e.pointerType) return;
     e.preventDefault();
+    e.stopImmediatePropagation();
+    // On mobile the touch handlers already moved the button,
+    // so this should only fire from a desktop mouse click
     showReject();
   });
 
